@@ -57,7 +57,14 @@ function outputDate(dateRequest) {
         
         return date;
         
-    } 
+    } else {
+        date = {
+            unix: null,
+            natural: null
+        };
+
+        return date;
+    }
     
     
 }
