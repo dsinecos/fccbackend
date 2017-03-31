@@ -1,11 +1,10 @@
 var express = require('express');
-var logger = require('morgan');
 var path = require('path');
 
 var app = express();
-var PORT = 2346;
 
-app.listen(PORT);
+//app.set("port", process.env.PORT || 2346);
+app.listen(2346);
 
 app.get('/:date', function(req, res){
     
