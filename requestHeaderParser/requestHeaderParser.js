@@ -3,10 +3,9 @@ var express = require('express');
 var app = express();
 var PORT = 2346;
 
-// For Heroku deployment
-app.set("port", process.env.PORT);
+// For compatibility with Heroku deployment and Local machine deployment
+var PORT = process.env.PORT || 2346;
 
-// For local machine deployment and testing
 app.listen(PORT);
 
 app.use(function(req,res){
