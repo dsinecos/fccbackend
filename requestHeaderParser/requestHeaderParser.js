@@ -26,18 +26,22 @@ app.use(function(req,res){
 
 function getUserData(req) {
 
-    var language = req.acceptsLanguages()[0];
+    var userIP = req.headers['x-forwarded-for'] || req.ip;
+
+    var userLanguage = req.acceptsLanguages()[0];
 
     var userSoftware = req.headers['user-agent'];
     var beginOSIndex = userSoftware.indexOf('(');
     var endOSIndex = userSoftware.indexOf(')');
-    var operatingSystem = userSoftware.slice(beginOSIndex, endOSIndex);
+    var userOperatingSystem = userSoftware.slice(beginOSIndex, endOSIndex);
+
+    console.log("IP received by the getUserData function " + req.ip);
  
     
     var parsedHeader = {
-        ipaddress: req.ip,
-        language: language,
-        os: operatingSystem
+        ipaddress: userIP,
+        language: userLanguage,
+        os: userOperatingSystem
     };
     
     var parsedHeaderString = JSON.stringify(parsedHeader);
