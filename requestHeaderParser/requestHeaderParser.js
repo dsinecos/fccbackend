@@ -35,7 +35,7 @@ function getUserData(req) {
     var endOSIndex = userSoftware.indexOf(')');
     var userOperatingSystem = userSoftware.slice(beginOSIndex, endOSIndex);
 
-    console.log("IP received by the getUserData function " + req.ip);
+    //console.log("IP received by the getUserData function " + req.ip);
  
     
     var parsedHeader = {
