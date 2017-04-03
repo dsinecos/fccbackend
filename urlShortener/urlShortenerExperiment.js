@@ -38,13 +38,39 @@ var writeDatabase = fs.createWriteStream('database');
 
 writeDatabase.write(JSON.stringify(redirectURLInfo));
 
+redirectURLInfo2 = {
+    request4: {
+        redirectURL: 'redirect4',
+        shortURL: 'shortURL4'
+    },
+    request5: {
+        redirectURL: 'redirec5',
+        shortURL: 'shortURL5'
+    },
+    request6: {
+        redirectURL: 'redirect6',
+        shortURL: 'shortURL6'
+    }
+};
+
+/*
+Approach to writing to the file
+1. Check if the file is empty. Write the object
+2. Check if the file already has an object. Add to that object
+    a. Read the entire file. Convert the read data to an object.
+    b. Add the new data to the existing object
+    c. Write the complete object again 
+*/
+
+writeDatabase.write(JSON.stringify(redirectURLInfo2));
+
 fs.readFile('database', 'utf8', function(err, data){
     
     if(err) throw err;    
     var fileDataAsObject = JSON.parse(data);
     
     // console.log(fileDataAsObject.request1.redirectURL);
-        
+
     getRelevantData(fileDataAsObject);    
 
 });
@@ -57,7 +83,7 @@ function getRelevantData(fileDataAsObject) {
 
     for(i in fileDataAsObject) {
         console.log('\n');
-        if(fileDataAsObject[i].shortURL === 'shortURL1') {
+        if(fileDataAsObject[i].shortURL === 'shortURL4') {
             console.log(fileDataAsObject[i].redirectURL);
         } else {
             console.log("The shortURL you specified was not located in the database");
