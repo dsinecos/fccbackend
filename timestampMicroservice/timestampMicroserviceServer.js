@@ -2,9 +2,9 @@ var express = require('express');
 var path = require('path');
 
 var app = express();
+var PORT = process.env.PORT || 2346;
 
-//app.set("port", process.env.PORT || 2346);
-app.listen(2346);
+app.listen(PORT);
 
 app.get('/:date', function(req, res){
     

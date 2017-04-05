@@ -1,0 +1,24 @@
+{
+  "name": "timestamp",
+  "version": "1.0.0",
+  "description": "FCC Backend API Project",
+  "main": "timestampMicroserviceServer.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "dsinecos",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "-"
+  },
+  "keywords": [
+    "-"
+  ],
+  "dependencies": {
+    "express": "^4.15.2"
+  },
+  "engines": {
+    "node": "6.10.1"
+  }
+}
