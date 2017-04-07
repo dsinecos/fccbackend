@@ -1,29 +1,32 @@
-var pg = require('pg');
+// Learn to use regex to extract URL from /shorten/:url
+var express = require('express');
+var app = express();
+var PORT = process.env.PORT || 2350;
 
-var conString = "pg://fccbackend:blackwidow@localhost:5432/urlShortener";
-var client = new pg.Client(conString);
+app.enable("trust proxy");
+app.listen(PORT);
 
-client.connect();
+app.get(/shorten/, function(req, res) {
+    
+    //var longURL = req.params.longURL;
 
-client.query("DROP TABLE IF EXISTS ghanta");
-client.query("CREATE TABLE IF NOT EXISTS ghanta(firstname varchar(64), lastname varchar(64))");
-//client.end();
-//client.connect();
-client.query("INSERT INTO ghanta(firstname, lastname) values($1, $2)", ['Ronald', 'McDonald']);
-client.query("INSERT INTO ghanta(firstname, lastname) values($1, $2)", ['Mayor', 'McCheese']);
+    /*
+    var ipAddress = req.headers['x-forwarded-for'] || req.ip;
+    
+    var path = req.path;
+    var url = path.replace(/shorten/i, "");
+    var longURL = url.slice(2, url.length);
 
-var test = "Mayor";
+    console.log(req.path);
+    console.log(longURL);
+    console.log(longURL.length);
+    */
 
-var query = client.query('SELECT * FROM ghanta WHERE firstname = $1', [test]);
+    var url = "https://www.reddit.com/r/rickandmorty/"
 
-query.on("row", function (row, result) {
-    result.addRow(row);
+    res.redirect(url);
+    res.end();
 });
-query.on("end", function (result) {
-    var resultObject = result.rows;
-    console.log(resultObject);
-    console.log(resultObject[0].lastname);
-    client.end();
-});
 
-console.log("Hoye");
+// We have to apply regex on path
+
