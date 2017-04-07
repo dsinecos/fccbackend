@@ -1,99 +1,126 @@
-var express = require('express');
-var pg = require('pg');
+// Importing modules
 
+var url = require('url');
+
+// Initializing app
+
+var express = require('express');
 var app = express();
 var PORT = process.env.PORT || 2346;
-var conString = "pg://fccbackend:blackwidow@localhost:5432/urlShortener";
+
+app.enable("trust proxy");
+app.listen(PORT);
+
+// Connecting to database and creating table
+
+var pg = require('pg');
+var conString = "pg://admin:guest@localhost:5432/urlshortenerdata";
 var client = new pg.Client(conString);
 
 client.connect();
-//client.query("DROP TABLE IF EXISTS urlShortener");
-client.query("CREATE TABLE IF NOT EXISTS urlShortener(longURL varchar(64), shortURL varchar(64))");
 
-app.listen(PORT);
+// Create three fields - longURL, shortURL, ipAddress - in the table
+
+//client.query("DROP TABLE IF EXISTS urlshortenerdata");
+client.query("CREATE TABLE IF NOT EXISTS urlshortenerdata(longURL varchar(64), shortURL integer, ipAddress varchar(20))");
+
+// Routers
+
+app.get(/shorten/, function(req, res) {
+    
+    var path = req.path;
+    var url = path.replace(/shorten/i, "");
+    var longURL = url.slice(2, url.length);
+    
+    var ipAddress = req.headers['x-forwarded-for'] || req.ip;
+    
+    //console.log("ipAddress at the root " + ipAddress);
+    
+    if(isValidURL(longURL)) {
+        createShortURL(longURL, ipAddress, sendResponse);
+    } else {
+        res.write("The url provided is not valid")
+        res.end();
+    }
+
+    function isValidURL(url) {
+        var regexTestForValidURL = new RegExp("https?://www.*.com");
+        var isValidURL = regexTestForValidURL.test(url);
+        console.log(isValidURL);
+        return isValidURL;
+    }    
+    
+    function sendResponse(data) {
+        res.write(JSON.stringify(data, null, "  "));
+        res.end();
+    }
+    
+});
+
+function createShortURL(longURL, ipAddress, sendResponse) {
+    
+    /*
+    Get the maximum shortURL value for the given ipAddress. Increment it by 1.
+    */
+    
+    var maxShortURL = client.query("SELECT MAX(shortURL) FROM urlshortenerdata WHERE ipAddress = $1", [ipAddress]);
+    
+    maxShortURL.on("row", function(row, result) {
+        
+        console.log("Inside local function. The returned value of row from database is " + Number(row.max));
+        
+        var shortURL = Number(row.max) + 1;
+        
+        client.query("INSERT INTO urlshortenerdata(longURL, shortURL, ipAddress) values($1, $2, $3)", [longURL, Number(shortURL), ipAddress]);
+        
+        var data = {
+            longURL: longURL,
+            shortURL: shortURL,
+            ipAddress: ipAddress
+        };
+        
+        sendResponse(data)                
+    });
+    
+}
 
 app.get('/:shortURL', function(req, res){
     
     var shortURL = req.params.shortURL;
-
+    var ipAddress = req.headers['x-forwarded-for'] || req.ip;
+    
     console.log("This is the shortURL " + shortURL);
+    console.log("This is the IP Address " + ipAddress);
     
-    res.redirect(getRedirectURL(shortURL));
-    res.end(); // Is this required? //
+    getRedirectURL(shortURL, ipAddress, sendResponse);
     
-});
-
-app.get('/shorten/:shortenURL', function(req, res) {
-    
-    var shortenURL = req.params.shortenURL;
-
-    console.log("The longURL registered by the server is" + shortenURL);
-    
-    var returnObject = JSON.stringify(createShortURL(shortenURL));
-
-    res.write(returnObject);
-    res.end();
+    function sendResponse(data) {        
+        
+        var longURL = String(data.longurl);        
+        
+        res.redirect(longURL);
+        res.end();        
+        
+    }
     
 });
 
-function createShortURL(longURL) {
+function getRedirectURL(shortURL, ipAddress, sendResponse) {
     
-    /* This function will
-    Create an object that has two properties 1. Long or Redirect URL 2. Short URL
-    Write the object to the database
-    Send the object back to the calling function which will write it to the response stream
-    */ 
+    var redirectURLQuery = client.query("SELECT * FROM urlshortenerdata WHERE shortURL = $1 AND ipAddress = $2", [shortURL, ipAddress]);
     
-    var max = 1000000;
-    var min = 1;
-    var shortenedURLID = Math.round(Math.random()*(max-min) + min);
-    //var shortenedURL = "bite" + shortenedURLID;
+    redirectURLQuery.on("row", handleRow);
+    //redirectURLQuery.on("end", handleEnd);
     
-    client.query("INSERT INTO urlShortener(longURL, shortURL) values($1, $2)", [longURL, shortenedURLID]);
-    
-    return {
-        longURL: longURL,
-        shortURL: shortenedURLID
-    };
-    
-}
-
-function getRedirectURL(shortURL) {
-    
-    /*
-    This function will
-    1. Read the database and find the matching Long URL for the given short URL
-    2. Return the Long URL which will be redirected to by the calling function
-    */
-    
-    console.log("This is inside the getRedirectURL function " + shortURL);
-
-    var redirectURL;
-
-    var queryLongURL = client.query("SELECT longURL, shortURL FROM urlShortener WHERE shortURL = $1" [shortURL]);
-    
-    console.log("After query");
-
-    queryLongURL.on("row", function (row, result) {
+    function handleRow(row, result) {
+        
+        //console.log("This is the row " + JSON.stringify(row, null, "  "));
+        //console.log("This is the result " + JSON.stringify(result, null, "  "));
         
         result.addRow(row);
-
-    });
-
-    queryLongURL.on("end", function (result) {
+        console.log("Inside handleEnd function " + JSON.stringify(result.rows[0], null, "   "));
+        sendResponse(result.rows[0]);
+        //console.log("This is the result after using addRow method " + JSON.stringify(result, null, "  "));
         
-        redirectURL = result.rows[0].longURL;
-        
-        console.log("The redirect URL returned to the user is :" + redirectURL);
-        
-        return redirectURL;
-        
-        client.end();
-    });   
-    
-    
+    }
 }
-
-
-
-
