@@ -14,7 +14,7 @@ app.listen(PORT);
 // Connecting to database and creating table
 
 var pg = require('pg');
-var conString = "pg://admin:guest@localhost:5432/urlshortenerdata";
+var conString = process.env.DATABASE_URL || "pg://admin:guest@localhost:5432/urlshortenerdata";
 var client = new pg.Client(conString);
 
 client.connect();

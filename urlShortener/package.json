@@ -14,5 +14,12 @@
     "-"
   ],
   "author": "dsinecos",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.2",
+    "pg": "2.27.1"
+  },
+  "engines": {
+    "node": "6.10.1"
+  }
 }

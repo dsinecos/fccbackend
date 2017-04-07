@@ -8,24 +8,31 @@ app.listen(PORT);
 
 app.get(/shorten/, function(req, res) {
     
-    //var longURL = req.params.longURL;
-
-    /*
     var ipAddress = req.headers['x-forwarded-for'] || req.ip;
     
     var path = req.path;
     var url = path.replace(/shorten/i, "");
     var longURL = url.slice(2, url.length);
 
+    // What regex to use to test that longURL is a valid URL - of the format - http://www.example.com?
+
+    if(isValidURL(longURL)) {
+        res.redirect(longURL);
+    }
+
+    function isValidURL(url) {
+        var regexTestForValidURL = new RegExp("https?://www.*.com");
+        var isValidURL = regexTestForValidURL.test(url);
+        console.log(isValidURL);
+        return isValidURL;
+    }
+
+
+
     console.log(req.path);
     console.log(longURL);
     console.log(longURL.length);
-    */
-
-    var url = "https://www.reddit.com/r/rickandmorty/"
-
-    res.redirect(url);
-    res.end();
+    
 });
 
 // We have to apply regex on path
