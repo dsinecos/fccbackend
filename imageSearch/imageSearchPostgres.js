@@ -14,7 +14,9 @@ client.connect();
 client.query("DROP TABLE IF EXISTS imagesearchexperiment");
 client.query("CREATE TABLE IF NOT EXISTS imagesearchexperiment(ipAddress varchar(64), searchqueries text[])");
 
-client.query("INSERT INTO imagesearchexperiment(ipAddress, searchqueries) VALUES($1, $2)",["ipAddress1",["query1","query2","query3"]]);
+var testForModularity = "imagesearchexperiment(ipAddress, searchqueries)";
+
+client.query("INSERT INTO " + testForModularity + " VALUES($1, $2)",["ipAddress1",["query1","query2","query3"]]);
 client.query("INSERT INTO imagesearchexperiment(ipAddress, searchqueries) VALUES($1, $2)",["ipAddress2",["query1","query2","query3"]]);
 client.query("INSERT INTO imagesearchexperiment(ipAddress, searchqueries) VALUES($1, $2)",["ipAddress3",["query1","query2","query3"]]);
 
