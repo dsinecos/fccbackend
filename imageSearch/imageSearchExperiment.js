@@ -15,12 +15,13 @@
 const https = require('https');
 
 var searchQuery = "sweden";
+var numOfResults = 3;
 
 var options = {
     protocol: 'https:',
     hostname: 'www.googleapis.com',
     method: 'GET',
-    path: '/customsearch/v1?key=AIzaSyAMvA5Qgc7zh7QQRiWHlDUyZKHo2Bip1nc&cx=002283777886525146733%3Ave3xyd9kete&q=' + searchQuery + '&searchType=image&fileType=jpg&imgSize=xlarge&alt=json',
+    path: '/customsearch/v1?key=AIzaSyAMvA5Qgc7zh7QQRiWHlDUyZKHo2Bip1nc&cx=002283777886525146733%3Ave3xyd9kete&q=' + searchQuery + '&searchType=image&fileType=jpg&imgSize=xlarge&alt=json&num=' + numOfResults
 };
 
 https.get(options, handleImageSearchAPIResponse);
@@ -58,7 +59,7 @@ function handleImageSearchAPIResponse(res) {
             var objectName = "result";
 
             var imageData = {
-                [objectName + i]: {
+                [objectName + Number(i + 1)]: {
                     pageURL: googleAPICompleteResponseAsObject.items[i].image.contextLink,
                     imageURL: googleAPICompleteResponseAsObject.items[i].link,
                     altText: googleAPICompleteResponseAsObject.items[i].snippet 
