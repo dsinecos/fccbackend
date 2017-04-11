@@ -91,8 +91,13 @@ app.get('/:shortURL', function(req, res){
     
     console.log("This is the shortURL " + shortURL);
     console.log("This is the IP Address " + ipAddress);
-    
-    getRedirectURL(shortURL, ipAddress, sendResponse);
+
+    if(!Boolean(Number(shortURL))) {
+        res.write("I got no favicon.ico file. Thankyou for the request");
+        res.end()
+    } else {
+        getRedirectURL(shortURL, ipAddress, sendResponse);
+    }
     
     function sendResponse(data) {        
         
