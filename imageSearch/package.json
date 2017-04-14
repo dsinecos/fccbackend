@@ -1,0 +1,22 @@
+{
+  "name": "imagesearch",
+  "version": "1.0.0",
+  "description": "FCC Backend API Project 4",
+  "main": "imageSearch.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "-"
+  },
+  "author": "dsinecos",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.2",
+    "pg": "6.1.5"
+  },
+  "engines": {
+    "node": "6.10.1"
+  }
+}
